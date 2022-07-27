@@ -78,3 +78,17 @@ RUN rm -rf /var/lib/apt/lists/*
 # A BTRFS bug may prevent us from cleaning up these directories.
 # https://btrfs.wiki.kernel.org/index.php/Problem_FAQ#I_cannot_delete_an_empty_directory
 RUN rm -rf cartographer_ros catkin_ws || true
+
+##############################################################################################
+#python installs
+RUN sudo apt-get update && sudo apt-get install -y python-pip
+RUN pip install statistics numpy requests
+
+ARG gl
+RUN if  (test -n "$gl"); then sudo apt-get install -y libnvidia-gl-$gl; else echo "Will not install nvidia GL" ; fi
+
+# NVIDIA container runtime environment variables
+ENV NVIDIA_VISIBLE_DEVICES \
+    ${NVIDIA_VISIBLE_DEVICES:-all}
+ENV NVIDIA_DRIVER_CAPABILITIES \
+    ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}graphics
